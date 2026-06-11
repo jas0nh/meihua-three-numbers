@@ -146,13 +146,13 @@ const hexagramOrders = {
 const daxieDigits = ["零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"];
 const lineNames = ["初爻", "二爻", "三爻", "四爻", "五爻", "上爻"];
 const aiLinks = [
-  ["ChatGPT", "https://chatgpt.com/?q="],
-  ["Claude", "https://claude.ai/new?q="],
-  ["Gemini", "https://gemini.google.com/app?prompt="],
-  ["Grok", "https://grok.com/?q="],
-  ["DeepSeek", "https://chat.deepseek.com/?q="],
-  ["Kimi", "https://www.kimi.com/chat/?q="],
-  ["豆包", "https://www.doubao.com/chat/?q="],
+  { name: "ChatGPT", url: "https://chatgpt.com/?q=", supportsPrompt: true },
+  { name: "Claude", url: "https://claude.ai/new", supportsPrompt: false },
+  { name: "Gemini", url: "https://gemini.google.com/app", supportsPrompt: false },
+  { name: "Grok", url: "https://grok.com/?q=", supportsPrompt: true },
+  { name: "DeepSeek", url: "https://chat.deepseek.com/", supportsPrompt: false },
+  { name: "Kimi", url: "https://www.kimi.com/chat/", supportsPrompt: false },
+  { name: "豆包", url: "https://www.doubao.com/chat/", supportsPrompt: false },
 ];
 
 const $ = (selector) => document.querySelector(selector);
@@ -163,6 +163,7 @@ const promptText = $("#promptText");
 const hexagramName = $("#hexagramName");
 const hexagramDetail = $("#hexagramDetail");
 const hexagramLines = $("#hexagramLines");
+const changedHexagramLines = $("#changedHexagramLines");
 const trigramGrid = $("#trigramGrid");
 const steps = {
   upper: $("#stepUpper"),
@@ -217,15 +218,24 @@ function trigramFromLines(lines) {
   return trigrams.find((trigram) => trigram.lines.every((line, index) => line === lines[index]));
 }
 
-function renderLines(lower, upper, movingLine = 0) {
+function renderLineSet(target, lower, upper, movingLine = 0) {
   const lines = [...upper.lines].reverse().concat([...lower.lines].reverse());
-  hexagramLines.innerHTML = "";
+  target.innerHTML = "";
   lines.forEach((line, visualIndex) => {
     const div = document.createElement("div");
     const lineFromBottom = 6 - visualIndex;
     div.className = `yao ${line ? "yang" : "yin"} ${lineFromBottom === movingLine ? "moving" : ""}`;
-    hexagramLines.appendChild(div);
+    target.appendChild(div);
   });
+}
+
+function renderLines(lower, upper, movingLine = 0) {
+  renderLineSet(hexagramLines, lower, upper, movingLine);
+}
+
+function renderChangedLines(lower, upper, movingLine = 0, muted = false) {
+  changedHexagramLines.classList.toggle("muted", muted);
+  renderLineSet(changedHexagramLines, lower, upper, movingLine);
 }
 
 function renderTrigramGrid() {
@@ -248,22 +258,18 @@ function randomNumber() {
 
 function updateAiLinks() {
   document.querySelectorAll(".ai-link").forEach((link, index) => {
-    const [, baseUrl] = aiLinks[index];
+    const ai = aiLinks[index];
     const query = currentPrompt ? encodeURIComponent(currentPrompt) : "";
-    link.href = query ? `${baseUrl}${query}` : link.href.split("?")[0];
+    link.dataset.promptMode = ai.supportsPrompt ? "direct" : "copy";
+    link.href = query && ai.supportsPrompt ? `${ai.url}${query}` : ai.url;
   });
 }
 
 function setPrompt(reading) {
   currentPrompt = [
-    `问题：${reading.question}`,
-    "起卦方式：梅花易数三数起卦",
-    `三数：${reading.numbers.join("、")}`,
-    `本卦：${reading.originalName}，卦序第${reading.originalOrder}（${reading.upper.name}${reading.upper.nature}上，${reading.lower.name}${reading.lower.nature}下）`,
-    `动爻：${lineNames[reading.movingLine - 1]}动`,
-    `变卦：${reading.changedName}，卦序第${reading.changedOrder}（${reading.changedUpper.name}${reading.changedUpper.nature}上，${reading.changedLower.name}${reading.changedLower.nature}下）`,
-    `体卦：${reading.bodyTrigram.name}${reading.bodyTrigram.element}，用卦：${reading.useTrigram.name}${reading.useTrigram.element}`,
-    "请按梅花易数思路，结合问题背景、本卦、动爻、变卦、体用、五行生克来解读，说明事情走向、风险点、建议和时间感，不要泛泛谈哲理。",
+    `我想问：${reading.question}`,
+    `三数起卦得本卦「${reading.originalName}」，${lineNames[reading.movingLine - 1]}动，变卦「${reading.changedName}」。`,
+    "请围绕我的问题本身解读这个卦象，给出事情走向、关键风险和可执行建议。",
   ].join("\n");
   promptText.textContent = currentPrompt;
   copyButton.disabled = false;
@@ -288,6 +294,7 @@ function resetReadingUi() {
   steps.changed.querySelector("p").textContent = "等待动爻阴阳相变。";
   hexagramName.textContent = "推演中";
   hexagramDetail.textContent = "三数已得，正在按八卦取余、合成本卦并推得变卦。";
+  renderChangedLines(trigrams[7], trigrams[0], 0, true);
   promptText.textContent = "起卦后将自动生成完整解读模板。";
   copyButton.disabled = true;
 }
@@ -343,26 +350,27 @@ function showResult(numbers) {
 
   resetReadingUi();
   renderLines(reading.lower, reading.upper, 0);
+  renderChangedLines(trigrams[7], trigrams[0], 0, true);
 
   const queueStep = (delay, action) => {
     stepTimers.push(window.setTimeout(action, delay));
   };
 
-  queueStep(380, () => {
+  queueStep(300, () => {
     setStep(
       steps.upper,
       `${reading.numbers[0]} ÷ 8 = ${reading.upperMath.quotient} 余 ${reading.upperMath.rawRemainder}，取 ${reading.upperMath.normalized}，对应 ${reading.upper.name}卦 ${reading.upper.symbol}，${reading.upper.name}为${reading.upper.nature}。`,
     );
   });
 
-  queueStep(1120, () => {
+  queueStep(1000, () => {
     setStep(
       steps.lower,
       `${reading.numbers[1]} ÷ 8 = ${reading.lowerMath.quotient} 余 ${reading.lowerMath.rawRemainder}，取 ${reading.lowerMath.normalized}，对应 ${reading.lower.name}卦 ${reading.lower.symbol}，${reading.lower.name}为${reading.lower.nature}。`,
     );
   });
 
-  queueStep(1900, () => {
+  queueStep(1700, () => {
     hexagramName.textContent = reading.originalName;
     hexagramDetail.textContent = `${reading.upper.name}${reading.upper.nature}在上，${reading.lower.name}${reading.lower.nature}在下，合为本卦「${reading.originalName}」，卦序第 ${reading.originalOrder}。`;
     setStep(
@@ -371,7 +379,7 @@ function showResult(numbers) {
     );
   });
 
-  queueStep(2740, () => {
+  queueStep(3000, () => {
     renderLines(reading.lower, reading.upper, reading.movingLine);
     setStep(
       steps.moving,
@@ -379,7 +387,8 @@ function showResult(numbers) {
     );
   });
 
-  queueStep(3600, () => {
+  queueStep(4300, () => {
+    renderChangedLines(reading.changedLower, reading.changedUpper, 0, false);
     setStep(
       steps.changed,
       `${lineNames[reading.movingLine - 1]}由 ${lineSymbol(reading.originalLines[reading.movingLine - 1])} 变为 ${lineSymbol(reading.changedLines[reading.movingLine - 1])}。变卦为 ${reading.changedUpper.name}${reading.changedUpper.nature}上、${reading.changedLower.name}${reading.changedLower.nature}下，即「${reading.changedName}」，卦序第 ${reading.changedOrder}。`,
@@ -392,6 +401,9 @@ function showResult(numbers) {
 function animateNumbers(finalNumbers) {
   const outputIds = ["#numOne", "#numTwo", "#numThree"];
   const cards = document.querySelectorAll(".number-card");
+  resetReadingUi();
+  hexagramName.textContent = "三数未定";
+  hexagramDetail.textContent = "正在取数，约五息后出本卦。";
   const interval = window.setInterval(() => {
     outputIds.forEach((id) => {
       $(id).textContent = toDaxie(randomNumber());
@@ -401,15 +413,22 @@ function animateNumbers(finalNumbers) {
   cards.forEach((card) => card.classList.add("is-rolling"));
   castButton.disabled = true;
 
+  finalNumbers.forEach((number, index) => {
+    window.setTimeout(() => {
+      $(outputIds[index]).textContent = toDaxie(number);
+      cards[index].classList.remove("is-rolling");
+    }, 1400 + index * 900);
+  });
+
   window.setTimeout(() => {
     window.clearInterval(interval);
-    outputIds.forEach((id, index) => {
-      $(id).textContent = toDaxie(finalNumbers[index]);
-    });
     cards.forEach((card) => card.classList.remove("is-rolling"));
-    castButton.disabled = false;
     showResult(finalNumbers);
-  }, 1420);
+  }, 3300);
+
+  window.setTimeout(() => {
+    castButton.disabled = false;
+  }, 9000);
 }
 
 castButton.addEventListener("click", () => {
@@ -426,5 +445,19 @@ copyButton.addEventListener("click", async () => {
   }, 1300);
 });
 
+document.querySelectorAll(".ai-link").forEach((link, index) => {
+  link.addEventListener("click", async () => {
+    if (!currentPrompt) return;
+    await navigator.clipboard.writeText(currentPrompt);
+    link.classList.add("copied");
+    window.setTimeout(() => {
+      link.classList.remove("copied");
+    }, 1200);
+  });
+  link.dataset.promptMode = aiLinks[index].supportsPrompt ? "direct" : "copy";
+});
+
 renderLines(trigrams[7], trigrams[0], 1);
+renderChangedLines(trigrams[7], trigrams[0], 0, true);
 renderTrigramGrid();
+updateAiLinks();
