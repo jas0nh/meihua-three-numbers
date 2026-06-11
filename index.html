@@ -17,7 +17,7 @@
         <div class="hero-copy">
           <p class="eyebrow">三数成象 · 动静相生</p>
           <h1 id="page-title">梅花三数起卦</h1>
-          <p class="subtitle">默念所问，取三数成卦。上卦、下卦、动爻一并生成，再带着结果向 AI 求解。</p>
+          <p class="subtitle">默念所问，取三数成卦。先明问题，再看本卦、动爻与变卦，最后带着完整卦象向 AI 求解。</p>
         </div>
       </section>
 
@@ -51,7 +51,10 @@
         </div>
 
         <section class="result" id="result" aria-live="polite">
-          <div class="hexagram-lines" id="hexagramLines" aria-hidden="true"></div>
+          <div class="hexagram-stack">
+            <p>本卦</p>
+            <div class="hexagram-lines" id="hexagramLines" aria-hidden="true"></div>
+          </div>
           <div class="result-copy">
             <p class="result-label">卦象</p>
             <h2 id="hexagramName">静候一问</h2>
@@ -59,10 +62,56 @@
           </div>
         </section>
 
+        <section class="method-card" aria-label="八卦对应数">
+          <div>
+            <p class="result-label">八卦对应数</p>
+            <p>上卦、下卦按 8 取余，余数为 0 时按 8 处理；动爻按 6 取余，余数为 0 时按 6 处理。</p>
+          </div>
+          <div class="trigram-grid" id="trigramGrid"></div>
+        </section>
+
+        <section class="calculation" aria-label="起卦推演过程">
+          <article class="calc-step" id="stepUpper">
+            <span>一</span>
+            <div>
+              <h3>取上卦</h3>
+              <p>等待第一数。</p>
+            </div>
+          </article>
+          <article class="calc-step" id="stepLower">
+            <span>二</span>
+            <div>
+              <h3>取下卦</h3>
+              <p>等待第二数。</p>
+            </div>
+          </article>
+          <article class="calc-step" id="stepOriginal">
+            <span>三</span>
+            <div>
+              <h3>组成六爻</h3>
+              <p>等待上下卦合成。</p>
+            </div>
+          </article>
+          <article class="calc-step" id="stepMoving">
+            <span>四</span>
+            <div>
+              <h3>求动爻</h3>
+              <p>等待第三数。</p>
+            </div>
+          </article>
+          <article class="calc-step" id="stepChanged">
+            <span>五</span>
+            <div>
+              <h3>变卦</h3>
+              <p>等待动爻阴阳相变。</p>
+            </div>
+          </article>
+        </section>
+
         <section class="prompt-block" aria-label="AI 解读提示词">
           <div>
             <p class="result-label">Prompt</p>
-            <p id="promptText">起卦后将自动生成。</p>
+            <p id="promptText">起卦后将自动生成完整解读模板。</p>
           </div>
           <button id="copyPrompt" type="button" disabled>复制</button>
         </section>
