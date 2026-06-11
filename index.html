@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="梅花易数三数起卦：输入所问之事，随机生成三数并拼接 AI 解读提示词。"
+    />
+    <title>梅花三数起卦</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="brand-mark" aria-hidden="true">梅</div>
+        <div class="hero-copy">
+          <p class="eyebrow">三数成象 · 动静相生</p>
+          <h1 id="page-title">梅花三数起卦</h1>
+          <p class="subtitle">默念所问，取三数成卦。上卦、下卦、动爻一并生成，再带着结果向 AI 求解。</p>
+        </div>
+      </section>
+
+      <section class="divination-panel" aria-label="三数起卦工具">
+        <div class="question-block">
+          <label for="question">所问之事</label>
+          <textarea
+            id="question"
+            rows="4"
+            placeholder="例如：我接下来三个月的事业选择该如何取舍？"
+          ></textarea>
+          <button id="castButton" type="button">起卦</button>
+        </div>
+
+        <div class="numbers" aria-live="polite">
+          <article class="number-card">
+            <span>第一数</span>
+            <strong id="numOne">未定</strong>
+            <small>上卦</small>
+          </article>
+          <article class="number-card">
+            <span>第二数</span>
+            <strong id="numTwo">未定</strong>
+            <small>下卦</small>
+          </article>
+          <article class="number-card">
+            <span>第三数</span>
+            <strong id="numThree">未定</strong>
+            <small>动爻</small>
+          </article>
+        </div>
+
+        <section class="result" id="result" aria-live="polite">
+          <div class="hexagram-lines" id="hexagramLines" aria-hidden="true"></div>
+          <div class="result-copy">
+            <p class="result-label">卦象</p>
+            <h2 id="hexagramName">静候一问</h2>
+            <p id="hexagramDetail">输入问题后单击起卦，即可生成上下卦、动爻与 AI 提问 prompt。</p>
+          </div>
+        </section>
+
+        <section class="prompt-block" aria-label="AI 解读提示词">
+          <div>
+            <p class="result-label">Prompt</p>
+            <p id="promptText">起卦后将自动生成。</p>
+          </div>
+          <button id="copyPrompt" type="button" disabled>复制</button>
+        </section>
+
+        <nav class="ai-links" aria-label="向 AI 寻求解答">
+          <a class="ai-link chatgpt" data-ai="ChatGPT" href="https://chatgpt.com/" target="_blank" rel="noreferrer">
+            <span>◎</span><small>ChatGPT</small>
+          </a>
+          <a class="ai-link claude" data-ai="Claude" href="https://claude.ai/new" target="_blank" rel="noreferrer">
+            <span>◇</span><small>Claude</small>
+          </a>
+          <a class="ai-link gemini" data-ai="Gemini" href="https://gemini.google.com/app" target="_blank" rel="noreferrer">
+            <span>✦</span><small>Gemini</small>
+          </a>
+          <a class="ai-link grok" data-ai="Grok" href="https://grok.com/" target="_blank" rel="noreferrer">
+            <span>𝕏</span><small>Grok</small>
+          </a>
+          <a class="ai-link deepseek" data-ai="DeepSeek" href="https://chat.deepseek.com/" target="_blank" rel="noreferrer">
+            <span>深</span><small>DeepSeek</small>
+          </a>
+          <a class="ai-link kimi" data-ai="Kimi" href="https://www.kimi.com/chat/" target="_blank" rel="noreferrer">
+            <span>月</span><small>Kimi</small>
+          </a>
+          <a class="ai-link doubao" data-ai="豆包" href="https://www.doubao.com/chat/" target="_blank" rel="noreferrer">
+            <span>豆</span><small>豆包</small>
+          </a>
+        </nav>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
