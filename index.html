@@ -8,135 +8,149 @@
       content="梅花易数三数起卦：输入所问之事，随机生成三数并拼接 AI 解读提示词。"
     />
     <title>梅花三数起卦</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="shell">
       <section class="hero" aria-labelledby="page-title">
-        <div class="brand-mark" aria-hidden="true">梅</div>
+        <div class="brand-mark" aria-hidden="true">
+          <span>☯</span>
+          <small>☰ ☷</small>
+        </div>
         <div class="hero-copy">
           <p class="eyebrow">三数成象 · 动静相生</p>
           <h1 id="page-title">梅花三数起卦</h1>
-          <p class="subtitle">默念所问，取三数成卦。先明问题，再看本卦、动爻与变卦，最后带着完整卦象向 AI 求解。</p>
+          <p class="subtitle">默念所问，取三数成卦。先明问题，再看本卦、动爻与变卦，最后带着卦象向 AI 求解。</p>
         </div>
       </section>
 
       <section class="divination-panel" aria-label="三数起卦工具">
-        <div class="question-block">
-          <label for="question">所问之事</label>
-          <textarea
-            id="question"
-            rows="4"
-            placeholder="例如：我接下来三个月的事业选择该如何取舍？"
-          ></textarea>
-          <button id="castButton" type="button">起卦</button>
+        <div class="dashboard-left">
+          <div class="question-block">
+            <label for="question">所问之事</label>
+            <textarea
+              id="question"
+              rows="4"
+              placeholder="例如：我接下来三个月的事业选择该如何取舍？"
+            ></textarea>
+            <button id="castButton" type="button">起卦</button>
+          </div>
+
+          <div class="numbers" aria-live="polite">
+            <article class="number-card">
+              <span>第一数</span>
+              <strong id="numOne">未定</strong>
+              <small>上卦</small>
+            </article>
+            <article class="number-card">
+              <span>第二数</span>
+              <strong id="numTwo">未定</strong>
+              <small>下卦</small>
+            </article>
+            <article class="number-card">
+              <span>第三数</span>
+              <strong id="numThree">未定</strong>
+              <small>动爻</small>
+            </article>
+          </div>
+
+          <section class="result" id="result" aria-live="polite">
+            <div class="hexagram-pair">
+              <div class="hexagram-stack">
+                <p>本卦</p>
+                <div class="hexagram-lines" id="hexagramLines" aria-hidden="true"></div>
+              </div>
+              <div class="hexagram-stack changed-stack">
+                <p>变卦</p>
+                <div class="hexagram-lines muted" id="changedHexagramLines" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="result-copy">
+              <p class="result-label">卦象</p>
+              <h2 id="hexagramName">静候一问</h2>
+              <p id="hexagramDetail">输入问题后单击起卦，即可生成上下卦、动爻与 AI 提问 prompt。</p>
+            </div>
+          </section>
+
+          <section class="prompt-block" aria-label="AI 解读提示词">
+            <div>
+              <p class="result-label">Prompt</p>
+              <p id="promptText">起卦后将自动生成完整解读模板。</p>
+            </div>
+            <button id="copyPrompt" type="button" disabled>复制</button>
+          </section>
         </div>
 
-        <div class="numbers" aria-live="polite">
-          <article class="number-card">
-            <span>第一数</span>
-            <strong id="numOne">未定</strong>
-            <small>上卦</small>
-          </article>
-          <article class="number-card">
-            <span>第二数</span>
-            <strong id="numTwo">未定</strong>
-            <small>下卦</small>
-          </article>
-          <article class="number-card">
-            <span>第三数</span>
-            <strong id="numThree">未定</strong>
-            <small>动爻</small>
-          </article>
+        <div class="dashboard-right">
+          <section class="method-card" aria-label="八卦对应数">
+            <div>
+              <p class="result-label">八卦对应数</p>
+              <p>上卦、下卦按 8 取余，余数为 0 时按 8 处理；动爻按 6 取余，余数为 0 时按 6 处理。</p>
+            </div>
+            <div class="trigram-grid" id="trigramGrid"></div>
+          </section>
+
+          <section class="calculation" aria-label="起卦推演过程">
+            <article class="calc-step" id="stepUpper">
+              <span>壹</span>
+              <div>
+                <h3>取上卦</h3>
+                <p>等待第一数。</p>
+              </div>
+            </article>
+            <article class="calc-step" id="stepLower">
+              <span>贰</span>
+              <div>
+                <h3>取下卦</h3>
+                <p>等待第二数。</p>
+              </div>
+            </article>
+            <article class="calc-step" id="stepOriginal">
+              <span>叁</span>
+              <div>
+                <h3>组成六爻</h3>
+                <p>等待上下卦合成。</p>
+              </div>
+            </article>
+            <article class="calc-step" id="stepMoving">
+              <span>肆</span>
+              <div>
+                <h3>求动爻</h3>
+                <p>等待第三数。</p>
+              </div>
+            </article>
+            <article class="calc-step" id="stepChanged">
+              <span>伍</span>
+              <div>
+                <h3>变卦</h3>
+                <p>等待动爻阴阳相变。</p>
+              </div>
+            </article>
+          </section>
         </div>
-
-        <section class="result" id="result" aria-live="polite">
-          <div class="hexagram-stack">
-            <p>本卦</p>
-            <div class="hexagram-lines" id="hexagramLines" aria-hidden="true"></div>
-          </div>
-          <div class="result-copy">
-            <p class="result-label">卦象</p>
-            <h2 id="hexagramName">静候一问</h2>
-            <p id="hexagramDetail">输入问题后单击起卦，即可生成上下卦、动爻与 AI 提问 prompt。</p>
-          </div>
-        </section>
-
-        <section class="method-card" aria-label="八卦对应数">
-          <div>
-            <p class="result-label">八卦对应数</p>
-            <p>上卦、下卦按 8 取余，余数为 0 时按 8 处理；动爻按 6 取余，余数为 0 时按 6 处理。</p>
-          </div>
-          <div class="trigram-grid" id="trigramGrid"></div>
-        </section>
-
-        <section class="calculation" aria-label="起卦推演过程">
-          <article class="calc-step" id="stepUpper">
-            <span>一</span>
-            <div>
-              <h3>取上卦</h3>
-              <p>等待第一数。</p>
-            </div>
-          </article>
-          <article class="calc-step" id="stepLower">
-            <span>二</span>
-            <div>
-              <h3>取下卦</h3>
-              <p>等待第二数。</p>
-            </div>
-          </article>
-          <article class="calc-step" id="stepOriginal">
-            <span>三</span>
-            <div>
-              <h3>组成六爻</h3>
-              <p>等待上下卦合成。</p>
-            </div>
-          </article>
-          <article class="calc-step" id="stepMoving">
-            <span>四</span>
-            <div>
-              <h3>求动爻</h3>
-              <p>等待第三数。</p>
-            </div>
-          </article>
-          <article class="calc-step" id="stepChanged">
-            <span>五</span>
-            <div>
-              <h3>变卦</h3>
-              <p>等待动爻阴阳相变。</p>
-            </div>
-          </article>
-        </section>
-
-        <section class="prompt-block" aria-label="AI 解读提示词">
-          <div>
-            <p class="result-label">Prompt</p>
-            <p id="promptText">起卦后将自动生成完整解读模板。</p>
-          </div>
-          <button id="copyPrompt" type="button" disabled>复制</button>
-        </section>
 
         <nav class="ai-links" aria-label="向 AI 寻求解答">
           <a class="ai-link chatgpt" data-ai="ChatGPT" href="https://chatgpt.com/" target="_blank" rel="noreferrer">
-            <span>◎</span><small>ChatGPT</small>
+            <span><img src="https://www.google.com/s2/favicons?domain=chatgpt.com&sz=64" alt="" /></span><small>ChatGPT</small>
           </a>
           <a class="ai-link claude" data-ai="Claude" href="https://claude.ai/new" target="_blank" rel="noreferrer">
-            <span>◇</span><small>Claude</small>
+            <span><img src="https://www.google.com/s2/favicons?domain=claude.ai&sz=64" alt="" /></span><small>Claude</small>
           </a>
           <a class="ai-link gemini" data-ai="Gemini" href="https://gemini.google.com/app" target="_blank" rel="noreferrer">
-            <span>✦</span><small>Gemini</small>
+            <span><img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64" alt="" /></span><small>Gemini</small>
           </a>
           <a class="ai-link grok" data-ai="Grok" href="https://grok.com/" target="_blank" rel="noreferrer">
-            <span>𝕏</span><small>Grok</small>
+            <span><img src="https://www.google.com/s2/favicons?domain=grok.com&sz=64" alt="" /></span><small>Grok</small>
           </a>
           <a class="ai-link deepseek" data-ai="DeepSeek" href="https://chat.deepseek.com/" target="_blank" rel="noreferrer">
-            <span>深</span><small>DeepSeek</small>
+            <span><img src="https://www.google.com/s2/favicons?domain=chat.deepseek.com&sz=64" alt="" /></span><small>DeepSeek</small>
           </a>
           <a class="ai-link kimi" data-ai="Kimi" href="https://www.kimi.com/chat/" target="_blank" rel="noreferrer">
-            <span>月</span><small>Kimi</small>
+            <span><img src="https://www.google.com/s2/favicons?domain=kimi.com&sz=64" alt="" /></span><small>Kimi</small>
           </a>
           <a class="ai-link doubao" data-ai="豆包" href="https://www.doubao.com/chat/" target="_blank" rel="noreferrer">
-            <span>豆</span><small>豆包</small>
+            <span><img src="https://www.google.com/s2/favicons?domain=doubao.com&sz=64" alt="" /></span><small>豆包</small>
           </a>
         </nav>
       </section>
