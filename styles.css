@@ -488,6 +488,10 @@ button:disabled {
   gap: 10px;
 }
 
+.prompt-mobile-anchor {
+  display: none;
+}
+
 .ai-link {
   position: relative;
   display: grid;
@@ -587,7 +591,12 @@ button:disabled {
     grid-template-areas:
       "left"
       "right"
+      "prompt"
       "links";
+  }
+
+  .prompt-block {
+    grid-area: prompt;
   }
 
   .dashboard-left,
@@ -615,6 +624,10 @@ button:disabled {
 
   .trigram-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .prompt-mobile-anchor {
+    display: block;
   }
 
   .divination-panel {

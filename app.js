@@ -165,6 +165,9 @@ const hexagramDetail = $("#hexagramDetail");
 const hexagramLines = $("#hexagramLines");
 const changedHexagramLines = $("#changedHexagramLines");
 const trigramGrid = $("#trigramGrid");
+const promptBlock = $(".prompt-block");
+const dashboardLeft = $(".dashboard-left");
+const promptMobileAnchor = $("#promptMobileAnchor");
 const steps = {
   upper: $("#stepUpper"),
   lower: $("#stepLower"),
@@ -174,6 +177,7 @@ const steps = {
 };
 let currentPrompt = "";
 let stepTimers = [];
+const mobilePromptLayout = window.matchMedia("(max-width: 820px)");
 
 function toDaxie(num) {
   if (num <= 10) return num === 10 ? "拾" : daxieDigits[num];
@@ -297,6 +301,20 @@ function resetReadingUi() {
   renderChangedLines(trigrams[7], trigrams[0], 0, true);
   promptText.textContent = "起卦后将自动生成完整解读模板。";
   copyButton.disabled = true;
+}
+
+function syncPromptLayout(event) {
+  const isMobile = event.matches ?? event.currentTarget?.matches ?? mobilePromptLayout.matches;
+  if (isMobile) {
+    if (promptMobileAnchor && promptBlock?.previousElementSibling !== promptMobileAnchor) {
+      promptMobileAnchor.after(promptBlock);
+    }
+    return;
+  }
+
+  if (dashboardLeft && dashboardLeft.lastElementChild !== promptBlock) {
+    dashboardLeft.append(promptBlock);
+  }
 }
 
 function makeReading(numbers) {
@@ -461,3 +479,5 @@ renderLines(trigrams[7], trigrams[0], 1);
 renderChangedLines(trigrams[7], trigrams[0], 0, true);
 renderTrigramGrid();
 updateAiLinks();
+syncPromptLayout(mobilePromptLayout);
+mobilePromptLayout.addEventListener("change", syncPromptLayout);
