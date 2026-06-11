@@ -122,6 +122,8 @@ h1 {
 .question-block,
 .numbers,
 .result,
+.method-card,
+.calculation,
 .prompt-block,
 .ai-links {
   position: relative;
@@ -236,6 +238,19 @@ button:disabled {
   border-radius: 8px;
 }
 
+.hexagram-stack {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.hexagram-stack p {
+  margin: 0;
+  color: var(--cinnabar);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .hexagram-lines {
   display: grid;
   gap: 10px;
@@ -281,6 +296,116 @@ button:disabled {
   line-height: 1.8;
 }
 
+.method-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) 1.4fr;
+  gap: 18px;
+  align-items: center;
+  padding: 20px;
+  background: rgba(248, 241, 228, 0.76);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.method-card p:last-child {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  line-height: 1.75;
+}
+
+.trigram-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.trigram-cell {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px 10px;
+  background: rgba(255, 250, 240, 0.74);
+  border: 1px solid rgba(89, 60, 38, 0.16);
+  border-radius: 6px;
+}
+
+.trigram-cell strong {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  aspect-ratio: 1;
+  color: var(--silk);
+  font-size: 12px;
+  background: var(--cinnabar);
+  border-radius: 50%;
+}
+
+.trigram-cell span {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.trigram-cell small {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.calculation {
+  display: grid;
+  gap: 10px;
+}
+
+.calc-step {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  background: rgba(255, 250, 240, 0.68);
+  border: 1px solid rgba(89, 60, 38, 0.16);
+  border-radius: 8px;
+  opacity: 0.72;
+  transform: translateY(2px);
+  transition: opacity 260ms ease, transform 260ms ease, border-color 260ms ease, background 260ms ease;
+}
+
+.calc-step > span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  aspect-ratio: 1;
+  color: var(--cinnabar);
+  font-family: var(--serif);
+  font-weight: 700;
+  background: var(--paper-deep);
+  border: 1px solid rgba(167, 53, 34, 0.24);
+  border-radius: 50%;
+}
+
+.calc-step h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.calc-step p {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.calc-step.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  background: rgba(255, 250, 240, 0.88);
+  border-color: rgba(167, 53, 34, 0.32);
+}
+
 .prompt-block {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -299,6 +424,7 @@ button:disabled {
   margin: 8px 0 0;
   color: var(--silk);
   line-height: 1.7;
+  white-space: pre-line;
 }
 
 .ai-links {
@@ -382,6 +508,7 @@ button:disabled {
   .hero,
   .question-block,
   .result,
+  .method-card,
   .prompt-block {
     grid-template-columns: 1fr;
   }
@@ -397,6 +524,10 @@ button:disabled {
   }
 
   .ai-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trigram-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
