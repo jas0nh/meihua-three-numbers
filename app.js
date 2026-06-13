@@ -187,6 +187,10 @@ function toDaxie(num) {
   return `${daxieDigits[tens]}拾${ones ? daxieDigits[ones] : ""}`;
 }
 
+function formatDisplayNumber(num) {
+  return `${toDaxie(num)}（${num}）`;
+}
+
 function normalize(number, base) {
   const remainder = number % base;
   return remainder === 0 ? base : remainder;
@@ -377,14 +381,14 @@ function showResult(numbers) {
   queueStep(300, () => {
     setStep(
       steps.upper,
-      `${reading.numbers[0]} ÷ 8 = ${reading.upperMath.quotient} 余 ${reading.upperMath.rawRemainder}，取 ${reading.upperMath.normalized}，对应 ${reading.upper.name}卦 ${reading.upper.symbol}，${reading.upper.name}为${reading.upper.nature}。`,
+      `${formatDisplayNumber(reading.numbers[0])} ÷ 8 = ${reading.upperMath.quotient} 余 ${reading.upperMath.rawRemainder}，取 ${formatDisplayNumber(reading.upperMath.normalized)}，对应 ${reading.upper.name}卦 ${reading.upper.symbol}，${reading.upper.name}为${reading.upper.nature}。`,
     );
   });
 
   queueStep(1000, () => {
     setStep(
       steps.lower,
-      `${reading.numbers[1]} ÷ 8 = ${reading.lowerMath.quotient} 余 ${reading.lowerMath.rawRemainder}，取 ${reading.lowerMath.normalized}，对应 ${reading.lower.name}卦 ${reading.lower.symbol}，${reading.lower.name}为${reading.lower.nature}。`,
+      `${formatDisplayNumber(reading.numbers[1])} ÷ 8 = ${reading.lowerMath.quotient} 余 ${reading.lowerMath.rawRemainder}，取 ${formatDisplayNumber(reading.lowerMath.normalized)}，对应 ${reading.lower.name}卦 ${reading.lower.symbol}，${reading.lower.name}为${reading.lower.nature}。`,
     );
   });
 
@@ -401,7 +405,7 @@ function showResult(numbers) {
     renderLines(reading.lower, reading.upper, reading.movingLine);
     setStep(
       steps.moving,
-      `${reading.numbers[2]} ÷ 6 = ${reading.movingMath.quotient} 余 ${reading.movingMath.rawRemainder}，取 ${reading.movingMath.normalized}，因此 ${lineNames[reading.movingLine - 1]}动。`,
+      `${formatDisplayNumber(reading.numbers[2])} ÷ 6 = ${reading.movingMath.quotient} 余 ${reading.movingMath.rawRemainder}，取 ${formatDisplayNumber(reading.movingMath.normalized)}，因此 ${lineNames[reading.movingLine - 1]}动。`,
     );
   });
 
@@ -416,14 +420,17 @@ function showResult(numbers) {
   });
 }
 
-function animateNumbers(finalNumbers) {
+function animateNumbers() {
   const outputIds = ["#numOne", "#numTwo", "#numThree"];
   const cards = document.querySelectorAll(".number-card");
+  const locked = [false, false, false];
+  const settledNumbers = [0, 0, 0];
   resetReadingUi();
   hexagramName.textContent = "三数未定";
   hexagramDetail.textContent = "正在取数，约五息后出本卦。";
   const interval = window.setInterval(() => {
-    outputIds.forEach((id) => {
+    outputIds.forEach((id, index) => {
+      if (locked[index]) return;
       $(id).textContent = toDaxie(randomNumber());
     });
   }, 82);
@@ -431,9 +438,12 @@ function animateNumbers(finalNumbers) {
   cards.forEach((card) => card.classList.add("is-rolling"));
   castButton.disabled = true;
 
-  finalNumbers.forEach((number, index) => {
+  outputIds.forEach((id, index) => {
     window.setTimeout(() => {
-      $(outputIds[index]).textContent = toDaxie(number);
+      const number = randomNumber();
+      locked[index] = true;
+      settledNumbers[index] = number;
+      $(id).textContent = toDaxie(number);
       cards[index].classList.remove("is-rolling");
     }, 1400 + index * 900);
   });
@@ -441,7 +451,7 @@ function animateNumbers(finalNumbers) {
   window.setTimeout(() => {
     window.clearInterval(interval);
     cards.forEach((card) => card.classList.remove("is-rolling"));
-    showResult(finalNumbers);
+    showResult(settledNumbers);
   }, 3300);
 
   window.setTimeout(() => {
@@ -450,8 +460,7 @@ function animateNumbers(finalNumbers) {
 }
 
 castButton.addEventListener("click", () => {
-  const numbers = [randomNumber(), randomNumber(), randomNumber()];
-  animateNumbers(numbers);
+  animateNumbers();
 });
 
 copyButton.addEventListener("click", async () => {
